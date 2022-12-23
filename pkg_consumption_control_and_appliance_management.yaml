@@ -3,33 +3,6 @@ group:
     entities:
 
 input_boolean:
-
-  carico1:
-    name: Test1
-  carico4:
-    name: Test4
-  carico5:
-    name: Test5
-  carico6:
-    name: Test6
-  carico7:
-    name: Test7
-  carico8:
-    name: Test8
-  carico9:
-    name: Test9
-  carico10:
-    name: Test10
-  carico11:
-    name: Test11
-  carico12:
-    name: Test12
-  carico13:
-    name: Test13
-  carico14:
-    name: Test14
-
-
   off_on_detachment:
     initial: 'off'
 
