@@ -18,9 +18,7 @@ Once filtered the appliances will start to turn off one at a time respecting the
 You can receive a notification for each automation step (Push, TTS, Alex).  
   
 ## Installation
-As a first step, you need to enter the pkg_consumption_control_and_appliance_management.yaml in the folder <i>[package](https://www.home-assistant.io/docs/configuration/packages/)</i>", restart HomeAssistant and import the project #link.  
+As a first step, you need to enter the pkg_consumption_control_and_appliance_management.yaml in the folder <i>[package](https://www.home-assistant.io/docs/configuration/packages/)</i>", restart HomeAssistant and import the <i>[project](https://github.com/marco-hacs/Consumption-control-and-appliance-management/blob/main/consumption_control_and_appliance_management.yaml)</i>".  
 
   
-E' il mio primo progetto che condivido e non ho ancora trovato il modo per evitare di utilizzare helper esterni."
-
-<i>[package](https://www.home-assistant.io/docs/configuration/packages/)</i>"
+This is my first project that I'm sharing, and I haven't yet found a way to avoid using external helpers.
