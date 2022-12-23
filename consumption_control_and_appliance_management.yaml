@@ -1,0 +1,485 @@
+blueprint:
+  name: Consumption control and appliance management
+  description:  "`- Version: 1.0 -`\n\n </h1> Never without power again! \n\n\n This project was done for the **shutting down of household appliances 
+      through verification of the instantaneous absorption in the home**, to avoid turning off the general meter.\n\n*
+      When the set threshold in watts is exceeded for the set time, appliances that are not in off mode are turned off and 
+      if they have device_class power associated it is checked that the power consumption is greater than 15w\n*
+      When the absorption returns to within use limits, the appliances are, (with the set delay) all turned back on in sequence (*from the last one turned off to the first one*).\n* 
+      A notification is sent for each automation status and you can choose between TTS, Alexa and Push.\n **IMPORTANT:** you must include 
+      the file <i>[pkg_consumption_control_and_appliance_management.yaml ](https://github.com/marco-hacs/Consumption-control-and-appliance-management/blob/main/pkg_consumption_control_and_appliance_management.yaml)</i> in the packages folder \n\n **Notes:** This
+      is my project that I share and I have not yet found a way to avoid using external helpers."
+
+
+  domain: automation
+  input:
+
+    list_loads:
+      name: Home appliances list
+      description: Enter the entities you want to turn off/on 
+      selector:
+        entity:
+          multiple: true
+          domain: 
+            - switch
+            - light
+            - climate
+            - fan
+
+    push:
+      name: "Notify push"
+      description: Enable to receive push notification
+      default: false
+      selector:
+        boolean:
+
+    notify_device:
+      name: Device to notify push
+      description: Device needs to run the official Home Assistant app to receive notifications.
+      selector:
+        device:
+          integration: mobile_app
+
+    tts:
+      name: "Notify TTS announcement "
+      description: "Enable to receive TTS notification"
+      default: false
+      selector:
+        boolean:
+
+    notify_tts:
+      name: Speaker for notify TTS
+      description: "Insert at least one media_player. \n
+                    **IMPORTANT** The tts service called by default is **tts.google_translate_say** "
+      selector:
+        entity:
+          domain: media_player
+          device_class: speaker
+          multiple: true
+
+    alexa:
+      name: "Notify Alexa"
+      description: "Enable to receive notification on Alexa"
+      default: false
+      selector:
+        boolean:
+
+    notify_alexa:
+      name: Speaker for notify Alexa
+      description: "Insert at least one media_player.\n 
+                    **IMPORTANT** If Alexa not integrated set the *notify alexa* button to off"
+      selector:
+        entity:
+          domain: media_player
+          multiple: true
+
+    sensor_power:
+      name: General sensor power
+      description: Choose the sensor generela power
+      selector:
+        entity:
+          domain: sensor
+          device_class: power
+
+    power_threshold:
+      name: Threshold for turning off home appliances
+      description: Set the threshold that will activate automation.
+      selector:
+        number:
+          min: 100
+          max: 10000
+          unit_of_measurement: W
+          mode: slider
+          step: 100
+
+    delay_detachment_appliances:
+      name: Delay in turning off home appliances
+      description: The waiting time for the automation to intervene in turning off appliances, and the time that elapses between shutdowns.
+      default: 5
+      selector:
+        number:
+          min: 0
+          max: 360
+          unit_of_measurement: sec
+          mode: slider
+          step: 1
+
+    appliances_restore_delay:
+      name: Delay to restore home appliances
+      description: 'Waiting time to turn appliances back on'
+      default: 5
+      selector:
+        number:
+          min: 0
+          max: 360
+          unit_of_measurement: sec
+          mode: slider
+          step: 1
+
+    title_notify_push:
+      name: Title notify push
+      description: "**Example of the text in Italian:** Controllo carichi"
+      selector:
+        text:
+
+    turn_off_appliances:
+      name: "Notification: high consumption with appliance shutdown"
+      description: "**Example of the text in Italian:** Spegnimento {% set list_carichi = states('input_text.list_loads').split( ) %}
+                  {%- for state in states -%} 
+                  {% if list_carichi[0]|regex_replace(find=',') in state.entity_id %}  
+                  {{- state.name }} {% endif %} {% endfor%}. Superati i {{ states(sensor_power)|int(0) }} watt!"
+      selector:
+        text:
+
+    high_consumption_no_appliances:
+      name: "Notification: high consumption but no appliances to turn off"
+      description: "**Example of the text in Italian:** ATTENZIONE. Superati i {{ states(sensor_power)|int(0) }} watt! Non ci sono elettrodomestici da spegnere."
+      selector:
+        text:
+
+    turn_on_appliances:
+      name: "Notification: consumption back within limits, switch on appliance"
+      description: "**Example of the text in Italian:** Il consumo è tornato nei limiti. {% set list_carichi = states('input_text.list_loads').split( ) %}
+              {%- for state in states -%} 
+              {% if list_carichi[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
+              {{- state.name }} {% endif %} {% endfor%} è stato acceso."
+      selector:
+        text: 
+    end_sequence:
+      name: "Notifica: All electrical appliances have been turned back on"
+      description: "**Example of the text in Italian:** I consumi sono tornati regolari e tutti gli elettrodomestici sono stati ripristinati
+              {%- for state in states -%} 
+              {% if list_carichi[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
+              {{- state.name }} {% endif %} {% endfor%} è stato acceso."
+      selector:
+        text: 
+
+
+mode: restart
+variables:
+  power_threshold: !input power_threshold
+  sensor_power: !input sensor_power
+  tts: !input tts
+  push: !input push
+  alexa: !input alexa
+trigger:
+
+  - platform: numeric_state
+    entity_id: !input sensor_power
+    above: !input power_threshold
+    for: 
+      seconds: !input delay_detachment_appliances
+    id: detachment_loads 
+
+  - platform: numeric_state
+    entity_id: !input sensor_power
+    below: !input power_threshold
+    for: 
+      seconds: !input appliances_restore_delay
+    id: load_restoration
+
+action:
+
+    - service: group.set
+      data:
+        object_id: list_loads
+        entities: !input list_loads
+
+    - alias: Distacco carichi
+      if:
+        - "{{ trigger.id == 'detachment_loads'}}"
+      then: 
+
+        - alias: Verifica consumo
+          condition: numeric_state
+          entity_id: !input sensor_power
+          above: !input power_threshold
+
+        - alias: Elimina lista text
+          service: input_text.set_value
+          data:
+            value: none
+          target:
+            entity_id: input_text.list_loads
+
+        - alias: Esegui loop per distacco carichi
+          repeat:
+            count: >
+              {% macro filter_power() %}
+              {%- set list = state_attr('group.list_loads','entity_id')|list -%}
+              {%- set filter = states| selectattr('entity_id', 'in', list) | rejectattr('state','equalto','off')| map(attribute='entity_id')|list-%}
+                {%-  for on_power_off in list if on_power_off in filter  -%}
+                {% set id = device_id(on_power_off)%}
+                {%- set sensor_power =expand(device_entities(id))  | selectattr('attributes.device_class', 'defined')| selectattr('attributes.device_class', 'eq','power') | map(attribute='entity_id')|list %}
+                    {%- for power in sensor_power -%}
+                      {% if states(power)|int(0) < 15 %}  
+                        {{-on_power_off -}}
+                      {%endif%}
+                    {%endfor%} 
+                {%endfor%}
+              {%endmacro%}
+              {% set list = state_attr('group.list_loads','entity_id')|list %}
+              {% set filter = (states| selectattr('entity_id', 'in', list)| rejectattr('entity_id', 'in', filter_power().split( )) | rejectattr('state','equalto','off')| map(attribute='entity_id')|list)%}
+              {{filter|count+1}}
+            sequence:
+              - choose:
+                  - conditions: 
+                  
+                    - alias: Verifica consumo
+                      condition: numeric_state
+                      entity_id: !input sensor_power
+                      above: !input power_threshold
+
+                    - alias: Controlla che l'elemento del gruppo non sia in off e se assorbe più di 15w (device con power)
+                      condition: template
+                      value_template: >
+                        {% macro filter_power() %}
+                        {%- set list = state_attr('group.list_loads','entity_id')|list -%}
+                        {%- set filter = states| selectattr('entity_id', 'in', list) | rejectattr('state','equalto','off')| map(attribute='entity_id')|list-%}
+                          {%-  for on_power_off in list if on_power_off in filter  -%}
+                          {% set id = device_id(on_power_off)%}
+                          {%- set sensor_power =expand(device_entities(id))  | selectattr('attributes.device_class', 'defined')| selectattr('attributes.device_class', 'eq','power') | map(attribute='entity_id')|list %}
+                              {%- for power in sensor_power -%}
+                                {% if states(power)|int(0) < 15 %}  
+                                  {{-on_power_off -}}
+                                {%endif%}
+                              {%endfor%} 
+                          {%endfor%}
+                        {%endmacro%}
+                        {% set list = state_attr('group.list_loads','entity_id')|list %}
+                        {% set filter = (states| selectattr('entity_id', 'in', list)| rejectattr('entity_id', 'in', filter_power().split( )) | rejectattr('state','equalto','off')| map(attribute='entity_id')|list)%}
+                        {%- for entities in list if entities in filter  -%}
+                          {% if loop.first %}
+                                true
+                          {% endif %}
+                        {%else%}
+                        false
+                        {%endfor%}
+
+                    sequence: 
+
+                    - alias: Attiva bollean per sapere che distacco carichi è stato attivato
+                      service: input_boolean.turn_on
+                      data: {}
+                      target:
+                        entity_id: input_boolean.off_on_detachment
+
+                    - alias: Salva lista carichi spenti
+                      service: input_text.set_value
+                      data:
+                        value: >
+                          {% macro filter_power() %}
+                          {%- set list = state_attr('group.list_loads','entity_id')|list -%}
+                          {%- set filter = states| selectattr('entity_id', 'in', list) | rejectattr('state','equalto','off')| map(attribute='entity_id')|list-%}
+                            {%- for on_power_off in list if on_power_off in filter -%}
+                            {% set id = device_id(on_power_off)%}
+                            {%- set sensor_power =expand(device_entities(id))  | selectattr('attributes.device_class', 'defined')| selectattr('attributes.device_class', 'eq','power') | map(attribute='entity_id')|list %}
+                                {%- for power in sensor_power -%}
+                                  {% if states(power)|int(0) < 15 %}  
+                                    {{-on_power_off -}}
+                                  {%endif%}
+                                {%endfor%} 
+                            {%endfor%}
+                          {%endmacro%}
+                          {% set list = state_attr('group.list_loads','entity_id')|list %}
+                          {% set filter = (states| selectattr('entity_id', 'in', list)| rejectattr('entity_id', 'in', filter_power().split( )) | rejectattr('state','equalto','off')| map(attribute='entity_id')|list)%}
+                            {% for element in list if element in filter %}
+                              {% if loop.first %}
+                                {{element+((' ')+states('input_text.list_loads')if not is_state('input_text.list_loads','none')else(' '))}}
+                              {% endif %}
+                            {%endfor%}
+                      target:
+                        entity_id: input_text.list_loads
+
+                    - alias: Spegni il carico
+                      service: homeassistant.turn_off
+                      data: {}
+                      target:   
+                        entity_id: >
+                          {% macro filter_power() %}
+                          {%- set list = state_attr('group.list_loads','entity_id')|list -%}
+                          {%- set filter = states| selectattr('entity_id', 'in', list) | rejectattr('state','equalto','off')| map(attribute='entity_id')|list-%}
+                            {%-  for on_power_off in list if on_power_off in filter  -%}
+                            {% set id = device_id(on_power_off)%}
+                            {%- set sensor_power =expand(device_entities(id))  | selectattr('attributes.device_class', 'defined')| selectattr('attributes.device_class', 'eq','power') | map(attribute='entity_id')|list %}
+                                {%- for power in sensor_power -%}
+                                  {% if states(power)|int(0) < 15 %}  
+                                    {{-on_power_off -}}
+                                  {%endif%}
+                                {%endfor%} 
+                            {%endfor%}
+                          {%endmacro%}
+                          {% set list = state_attr('group.list_loads','entity_id')|list %}
+                          {% set filter = (states| selectattr('entity_id', 'in', list)| rejectattr('entity_id', 'in', filter_power().split( )) | rejectattr('state','equalto','off')| map(attribute='entity_id')|list)%}
+                          {%- for entities in list if entities in filter  -%}
+                            {% if loop.first %}
+                                  {{ entities }}
+                            {% endif %}
+                          {%else%}
+                            false
+                          {%endfor%}
+
+                    - parallel:
+
+                      - if:
+                          - "{{ alexa == true }}"
+                        then:
+ 
+                          - service: notify.alexa_media
+                            data:
+                              target: !input notify_alexa
+                              data:
+                                type: announce
+                                method: spoken
+                              message: !input turn_off_appliances
+
+                      - if:
+                          - "{{ push == true }}"
+                        then:
+ 
+                          - domain: mobile_app
+                            type: notify
+                            device_id: !input notify_device
+                            title: !input title_notify_push
+                            message: !input turn_off_appliances
+
+                      - if:
+                          - "{{ tts == true }}"
+                        then:
+                          - service: tts.google_translate_say
+                            data:
+                              message: !input turn_off_appliances
+                              entity_id: !input notify_tts
+
+                    - alias: Ritardo prossimo controllo per distacco
+                      delay:
+                        seconds: !input delay_detachment_appliances
+
+                default: 
+
+                - alias: Verifica consumo
+                  condition: numeric_state
+                  entity_id: !input sensor_power
+                  above: !input power_threshold
+
+                - parallel:
+
+                  - if:
+                      - "{{ tts == true }}"
+                    then:
+                      - service: tts.google_translate_say
+                        data:
+                          entity_id: !input notify_tts
+                          message:  !input high_consumption_no_appliances
+
+                  - if:
+                      - "{{ push == true }}"
+                    then:
+
+                      - domain: mobile_app
+                        type: notify
+                        device_id: !input notify_device
+                        title: !input title_notify_push
+                        message:  !input high_consumption_no_appliances
+
+
+                  - if:
+                      - "{{ alexa == true }}"
+                    then:
+
+                      - service: notify.alexa_media
+                        data:
+                          target: !input notify_alexa
+                          data:
+                            type: announce
+                            method: spoken
+                          message: !input high_consumption_no_appliances
+
+    - alias: Ripristino carico
+      if:
+        - alias: Controllo se è scattato il distacco carichi
+          condition: template
+          value_template: "{{trigger.id == 'load_restoration' and is_state('input_boolean.off_on_detachment', 'on')}} "
+      then: 
+        - alias: Ripristino carico
+          repeat:
+            count: "{{ states('input_text.list_loads').split( )|count }}"
+            sequence:
+
+              - parallel:
+                - if:
+                    - "{{ push == true }}"
+                  then:
+
+                    - domain: mobile_app
+                      type: notify
+                      device_id: !input notify_device
+                      title: !input title_notify_push
+                      message:  !input turn_on_appliances
+
+                - if:
+                    - "{{ tts == true }}"
+                  then:
+                    - service: tts.google_translate_say
+                      data:
+                        entity_id: !input notify_tts
+                        message:  !input turn_on_appliances
+
+                - if:
+                    - "{{ alexa == true }}"
+                  then:
+
+                    - service: notify.alexa_media
+                      data:
+                        target: !input notify_alexa
+                        data:
+                          type: announce
+                          method: spoken
+                        message: !input turn_on_appliances
+
+              - alias: Ripristina ultimo carico spento
+                service: homeassistant.turn_on
+                data: {}
+                target:
+                  entity_id: "{{states('input_text.list_loads').split( )[repeat.index-1]|regex_replace(find=',')}}"
+
+              - delay: 
+                  seconds: !input appliances_restore_delay
+
+              - parallel:
+
+                - if:
+                    - "{{ push == true }}"
+                  then:
+
+                    - domain: mobile_app
+                      type: notify
+                      device_id: !input notify_device
+                      title: !input title_notify_push
+                      message:  !input end_sequence
+
+                - if:
+                    - "{{ alexa == true }}"
+                  then:
+
+                    - service: notify.alexa_media
+                      data:
+                        target: !input notify_alexa
+                        data:
+                          type: announce
+                          method: spoken
+                        message: !input end_sequence
+
+                - if:
+                    - "{{ tts == true }}"
+                  then:
+                    - service: tts.google_translate_say
+                      data:
+                        entity_id: !input notify_tts
+                        message:  !input end_sequence
+
+        - alias: Imposta il boolean in off per indicare che il ripristiono
+          service: input_boolean.turn_off
+          data: {}
+          target:
+            entity_id: input_boolean.off_on_detachment
+          
