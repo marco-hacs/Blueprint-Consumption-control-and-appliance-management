@@ -25,4 +25,4 @@ In case you cannot import the file into the packages it is possible to replicate
   
 This is my first project that I'm sharing, and I haven't yet found a way to avoid using external helpers.
 
-
+<i>[https://community.home-assistant.io/t/consumption-control-and-appliance-management/507206](https://community.home-assistant.io/t/consumption-control-and-appliance-management/507206)</i>
