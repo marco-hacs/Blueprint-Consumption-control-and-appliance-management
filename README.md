@@ -19,7 +19,7 @@ You can receive a notification for each automation step (Push, TTS, Alex).
   
 ## Installation
 As a first step, you need to enter the <i>[pkg_consumption_control_and_appliance_management.yaml](https://github.com/marco-hacs/Consumption-control-and-appliance-management/blob/main/pkg_consumption_control_and_appliance_management.yaml)</i> in the folder <i>[package](https://www.home-assistant.io/docs/configuration/packages/)</i>, restart HomeAssistant and import the <i>[project](https://github.com/marco-hacs/Consumption-control-and-appliance-management/blob/main/consumption_control_and_appliance_management.yaml)</i>.  
-
+In case you cannot import the file into the packages it is possible to replicate the entities **maintaining the entity_id** contained in the <i>[file](https://github.com/marco-hacs/Consumption-control-and-appliance-management/blob/main/pkg_consumption_control_and_appliance_management.yaml)</i>
   
 This is my first project that I'm sharing, and I haven't yet found a way to avoid using external helpers.
 
