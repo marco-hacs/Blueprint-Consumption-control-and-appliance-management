@@ -18,8 +18,9 @@ Once filtered the appliances will start to turn off one at a time respecting the
 You can receive a notification for each automation step (Push, TTS, Alex).  
   
 ## Installation
-Come prima cosa bisogna inserire il file CARICHI.YAML nella cartella package, riavviare HomeAssistant ed importare il progetto #link.  
-*Se la cartella package non è presente. Seguire la guida #LINK# per attivarla. In alternativa puoi inserire le 3 entità del file nel tuo configuartion.yaml*
-  
+As a first step, you need to enter the pkg_consumption_control_and_appliance_management.yaml in the folder <i>[package](https://www.home-assistant.io/docs/configuration/packages/)</i>", restart HomeAssistant and import the project #link.  
+
   
 E' il mio primo progetto che condivido e non ho ancora trovato il modo per evitare di utilizzare helper esterni."
+
+<i>[package](https://www.home-assistant.io/docs/configuration/packages/)</i>"
