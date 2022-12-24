@@ -19,8 +19,21 @@ You can receive a notification for each automation step (Push, TTS, Alex).
   
 ## Installation
 As a first step, you need to enter the <i>[pkg_consumption_control_and_appliance_management.yaml](https://github.com/marco-hacs/Consumption-control-and-appliance-management/blob/main/pkg_consumption_control_and_appliance_management.yaml)</i> in the folder <i>[package](https://www.home-assistant.io/docs/configuration/packages/)</i>, restart HomeAssistant and import the <i>[project](https://github.com/marco-hacs/Consumption-control-and-appliance-management/blob/main/consumption_control_and_appliance_management.yaml)</i>.  
-In case you cannot import the file into the packages it is possible to replicate the entities **maintaining the entity_id** contained in the <i>[file](https://github.com/marco-hacs/Consumption-control-and-appliance-management/blob/main/pkg_consumption_control_and_appliance_management.yaml)</i>
-  
+In case you cannot import the file into the packages it is possible to replicate the entities **maintaining the entity_id** 
+``` 
+group:
+  list_loads:
+    entities:
+
+input_boolean:
+  off_on_detachment:
+    initial: 'off'
+
+input_text:
+  list_loads:
+    initial: 'none'
+    max: 255 
+```
 <a href="https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fmarco-hacs%2FConsumption-control-and-appliance-management%2Fblob%2Fmain%2Fconsumption_control_and_appliance_management.yaml" target="_blank"><img src="https://my.home-assistant.io/badges/blueprint_import.svg" alt="Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled." /></a>
   
 This is my first project that I'm sharing, and I haven't yet found a way to avoid using external helpers.
