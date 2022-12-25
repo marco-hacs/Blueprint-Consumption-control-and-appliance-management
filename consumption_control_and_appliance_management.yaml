@@ -120,6 +120,7 @@ blueprint:
 
     title_notify_push:
       name: Title notify push
+      default: false
       description: "**Example of the text in Italian:** Controllo carichi"
       selector:
         text:
