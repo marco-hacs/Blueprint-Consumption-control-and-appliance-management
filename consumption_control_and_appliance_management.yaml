@@ -34,6 +34,7 @@ blueprint:
 
     notify_device:
       name: Device to notify push
+      default: false
       description: Device needs to run the official Home Assistant app to receive notifications.
       selector:
         device:
@@ -47,6 +48,7 @@ blueprint:
         boolean:
 
     notify_tts:
+      default: false
       name: Speaker for notify TTS
       description: "Insert at least one media_player. \n
                     **IMPORTANT** The tts service called by default is **tts.google_translate_say** "
@@ -65,6 +67,7 @@ blueprint:
 
     notify_alexa:
       name: Speaker for notify Alexa
+      default: false
       description: "Insert at least one media_player.\n 
                     **IMPORTANT** If Alexa not integrated set the *notify alexa* button to off"
       selector:
