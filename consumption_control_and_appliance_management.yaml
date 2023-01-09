@@ -12,10 +12,25 @@ blueprint:
 
   domain: automation
   input:
+    language:
+      name: Select language
+      description: "Select the language for the text of notifications\n\n
+          Selezionare la lingua per il testo delle notifiche."
+      default: Italiano
+      selector:
+        select:
+          mode: dropdown
+          options:
+          - Italiano
+          - English
+          custom_value: false
+          multiple: false
+
 
     list_loads:
       name: Home appliances list
-      description: Enter the entities you want to turn off/on 
+      description: "Enter the entities you want to turn off/on\n\n
+          Inserire le entità che si desidera spegnere/accendere"
       selector:
         entity:
           multiple: true
@@ -25,59 +40,11 @@ blueprint:
             - climate
             - fan
 
-    push:
-      name: "Notify push"
-      description: Enable to receive push notification
-      default: false
-      selector:
-        boolean:
-
-    notify_device:
-      name: Device to notify push
-      default: false
-      description: Device needs to run the official Home Assistant app to receive notifications.
-      selector:
-        device:
-          integration: mobile_app
-
-    tts:
-      name: "Notify TTS announcement "
-      description: "Enable to receive TTS notification"
-      default: false
-      selector:
-        boolean:
-
-    notify_tts:
-      default: false
-      name: Speaker for notify TTS
-      description: "Insert at least one media_player. \n
-                    **IMPORTANT** The tts service called by default is **tts.google_translate_say** "
-      selector:
-        entity:
-          domain: media_player
-          device_class: speaker
-          multiple: true
-
-    alexa:
-      name: "Notify Alexa"
-      description: "Enable to receive notification on Alexa"
-      default: false
-      selector:
-        boolean:
-
-    notify_alexa:
-      name: Speaker for notify Alexa
-      default: false
-      description: "Insert at least one media_player.\n 
-                    **IMPORTANT** If Alexa not integrated set the *notify alexa* button to off"
-      selector:
-        entity:
-          domain: media_player
-          multiple: true
 
     sensor_power:
       name: General sensor power
-      description: Choose the sensor generela power
+      description: "Choose the sensor generela power\n\n
+          Scegliere il sensore che misura l'assorbimento"
       selector:
         entity:
           domain: sensor
@@ -85,7 +52,8 @@ blueprint:
 
     power_threshold:
       name: Threshold for turning off home appliances
-      description: Set the threshold that will activate automation.
+      description: "Set the threshold that will activate automation.\n\n
+          Impostare la soglia che attiva l'automazione."
       selector:
         number:
           min: 100
@@ -96,7 +64,8 @@ blueprint:
 
     delay_detachment_appliances:
       name: Delay in turning off home appliances
-      description: The waiting time for the automation to intervene in turning off appliances, and the time that elapses between shutdowns.
+      description: "The waiting time for the automation to intervene in turning off appliances, and the time that elapses between shutdowns.\n\n
+          Il tempo di attesa per l'intervento dell'automazione nello spegnimento degli apparecchi e il tempo che intercorre tra uno spegnimento e l'altro."
       default: 5
       selector:
         number:
@@ -108,7 +77,8 @@ blueprint:
 
     appliances_restore_delay:
       name: Delay to restore home appliances
-      description: 'Waiting time to turn appliances back on'
+      description: "Waiting time to turn appliances back on\n\n
+          Tempo di attesa per la riaccensione degli apparecchi"
       default: 5
       selector:
         number:
@@ -118,45 +88,60 @@ blueprint:
           mode: slider
           step: 1
 
-    title_notify_push:
-      name: Title notify push
+
+    push:
+      name: "Notify push"
+      description: "Enable to receive push notification\n\n
+          Abilitazione alla ricezione di notifiche push"
       default: false
-      description: "**Example of the text in Italian:** Controllo carichi"
       selector:
-        text:
+        boolean:
 
-    turn_off_appliances:
-      name: "Notification: high consumption with appliance shutdown"
-      description: "**Example of the text in Italian:** Spegnimento {% set list_carichi = states('input_text.list_loads').split( ) %}
-                  {%- for state in states -%} 
-                  {% if list_carichi[0]|regex_replace(find=',') in state.entity_id %}  
-                  {{- state.name }} {% endif %} {% endfor%}. Superati i {{ states(sensor_power)|int(0) }} watt!"
+    notify_device:
+      name: Device to notify push
+      default: false
+      description: "Device needs to run the official Home Assistant app to receive notifications.\n\n
+          Il dispositivo deve eseguire l'app ufficiale Home Assistant per ricevere le notifiche."
       selector:
-        text:
+        device:
+          integration: mobile_app
 
-    high_consumption_no_appliances:
-      name: "Notification: high consumption but no appliances to turn off"
-      description: "**Example of the text in Italian:** ATTENZIONE. Superati i {{ states(sensor_power)|int(0) }} watt! Non ci sono elettrodomestici da spegnere."
+    tts:
+      name: "Notify TTS announcement "
+      description: "Enable to receive TTS notification\n\n
+          Abilitazione alla ricezione di notifiche TTS"
+      default: false
       selector:
-        text:
+        boolean:
 
-    turn_on_appliances:
-      name: "Notification: consumption back within limits, switch on appliance"
-      description: "**Example of the text in Italian:** Il consumo è tornato nei limiti. {% set list_carichi = states('input_text.list_loads').split( ) %}
-              {%- for state in states -%} 
-              {% if list_carichi[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
-              {{- state.name }} {% endif %} {% endfor%} è stato acceso."
+    notify_tts:
+      default: false
+      name: Speaker for notify TTS
+      description: "Insert media_player. \n **IMPORTANT** The tts service called by default is **tts.google_translate_say** 
+          Inserire media_player. \n **IMPORTANT** Il servizio tts chiamato di default è **tts.google_translate_say** "
       selector:
-        text: 
-    end_sequence:
-      name: "Notifica: All electrical appliances have been turned back on"
-      description: "**Example of the text in Italian:** I consumi sono tornati regolari e tutti gli elettrodomestici sono stati ripristinati
-              {%- for state in states -%} 
-              {% if list_carichi[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
-              {{- state.name }} {% endif %} {% endfor%} è stato acceso."
-      selector:
-        text: 
+        entity:
+          domain: media_player
+          device_class: speaker
+          multiple: true
 
+    alexa:
+      name: "Notify Alexa"
+      description: "Enable to receive notification on Alexa\n\n
+          Abilita la ricezione di notifiche su Alexa"
+      default: false
+      selector:
+        boolean:
+
+    notify_alexa:
+      name: Speaker for notify Alexa
+      default: false
+      description: "Insert  media_player.\n**IMPORTANT** If Alexa not integrated set the *notify alexa* button to off\n\n
+          Inserire media_player.\n**IMPORTANTE** Se Alexa non è integrata, impostare il pulsante *notifica alexa* su off."
+      selector:
+        entity:
+          domain: media_player
+          multiple: true
 
 mode: restart
 variables:
@@ -165,6 +150,8 @@ variables:
   tts: !input tts
   push: !input push
   alexa: !input alexa
+  language: !input language
+  titles: '{% if language == ''Italiano'' %}CONTROLLO CARICHI {% else %}LOAD CONTROL.{% endif %}'
 trigger:
 
   - platform: numeric_state
@@ -323,7 +310,6 @@ action:
                           {%endfor%}
 
                     - parallel:
-
                       - if:
                           - "{{ alexa == true }}"
                         then:
@@ -334,7 +320,16 @@ action:
                               data:
                                 type: announce
                                 method: spoken
-                              message: !input turn_off_appliances
+                              message: > 
+                                {% if language == 'Italiano' %}Spegnimento {% set list_carichi = states('input_text.list_loads').split( ) %}
+                                  {%- for state in states -%} 
+                                    {% if list_carichi[0]|regex_replace(find=',') in state.entity_id %}  
+                                      {{- state.name }} {% endif %} {% endfor%}. Superati i {{ states(sensor_power)|int(0) }} watt! 
+                                {% else %}  Power off {% set list_loads = states('input_text.list_loads').split( ) %}
+                                  {%- for state in states -%} 
+                                    {% if list_loads[0]|regex_replace(find=',') in state.entity_id %}  
+                                      {{- state.name }} {% endif %} {% endfor%}. Exceeded {{ state(sensor_power)|int(0) }} watts!
+                                {% endif %}
 
                       - if:
                           - "{{ push == true }}"
@@ -343,15 +338,33 @@ action:
                           - domain: mobile_app
                             type: notify
                             device_id: !input notify_device
-                            title: !input title_notify_push
-                            message: !input turn_off_appliances
+                            title: "{{titles}}"
+                            message: > 
+                                {% if language == 'Italiano' %}Spegnimento {% set list_carichi = states('input_text.list_loads').split( ) %}
+                                  {%- for state in states -%} 
+                                    {% if list_carichi[0]|regex_replace(find=',') in state.entity_id %}  
+                                      {{- state.name }} {% endif %} {% endfor%}. Superati i {{ states(sensor_power)|int(0) }} watt! 
+                                {% else %}  Power off {% set list_loads = states('input_text.list_loads').split( ) %}
+                                  {%- for state in states -%} 
+                                    {% if list_loads[0]|regex_replace(find=',') in state.entity_id %}  
+                                      {{- state.name }} {% endif %} {% endfor%}. Exceeded {{ state(sensor_power)|int(0) }} watts!
+                                {% endif %}
 
                       - if:
                           - "{{ tts == true }}"
                         then:
                           - service: tts.google_translate_say
                             data:
-                              message: !input turn_off_appliances
+                              message: > 
+                                {% if language == 'Italiano' %}Spegnimento {% set list_carichi = states('input_text.list_loads').split( ) %}
+                                  {%- for state in states -%} 
+                                    {% if list_carichi[0]|regex_replace(find=',') in state.entity_id %}  
+                                      {{- state.name }} {% endif %} {% endfor%}. Superati i {{ states(sensor_power)|int(0) }} watt! 
+                                {% else %}  Power off {% set list_loads = states('input_text.list_loads').split( ) %}
+                                  {%- for state in states -%} 
+                                    {% if list_loads[0]|regex_replace(find=',') in state.entity_id %}  
+                                      {{- state.name }} {% endif %} {% endfor%}. Exceeded {{ state(sensor_power)|int(0) }} watts!
+                                {% endif %}
                               entity_id: !input notify_tts
 
                     - alias: Ritardo prossimo controllo per distacco
@@ -373,7 +386,10 @@ action:
                       - service: tts.google_translate_say
                         data:
                           entity_id: !input notify_tts
-                          message:  !input high_consumption_no_appliances
+                          message:  > 
+                            {% if language == 'Italiano' %}ATTENZIONE. Superati i {{ states(sensor_power)|int(0) }} watt! Non ci sono elettrodomestici da spegnere.
+                            {% else %}WARNING. Exceeded {{ states(sensor_power)|int(0) }} watts! There are no appliances to turn off.
+                            {% endif %}
 
                   - if:
                       - "{{ push == true }}"
@@ -382,8 +398,11 @@ action:
                       - domain: mobile_app
                         type: notify
                         device_id: !input notify_device
-                        title: !input title_notify_push
-                        message:  !input high_consumption_no_appliances
+                        title: "{{titles}}"
+                        message:  > 
+                          {% if language == 'Italiano' %}ATTENZIONE. Superati i {{ states(sensor_power)|int(0) }} watt! Non ci sono elettrodomestici da spegnere.
+                          {% else %}WARNING. Exceeded {{ states(sensor_power)|int(0) }} watts! There are no appliances to turn off.
+                          {% endif %}
 
 
                   - if:
@@ -396,7 +415,10 @@ action:
                           data:
                             type: announce
                             method: spoken
-                          message: !input high_consumption_no_appliances
+                          message:  > 
+                            {% if language == 'Italiano' %}ATTENZIONE. Superati i {{ states(sensor_power)|int(0) }} watt! Non ci sono elettrodomestici da spegnere.
+                            {% else %}WARNING. Exceeded {{ states(sensor_power)|int(0) }} watts! There are no appliances to turn off.
+                            {% endif %}
 
     - alias: Ripristino carico
       if:
@@ -410,6 +432,7 @@ action:
             sequence:
 
               - parallel:
+
                 - if:
                     - "{{ push == true }}"
                   then:
@@ -417,8 +440,17 @@ action:
                     - domain: mobile_app
                       type: notify
                       device_id: !input notify_device
-                      title: !input title_notify_push
-                      message:  !input turn_on_appliances
+                      title: "{{titles}}"
+                      message:  > 
+                        {% if language == 'Italiano' %}Il consumo è tornato nei limiti. {% set list_carichi = states('input_text.list_loads').split( ) %}
+                          {%- for state in states -%} 
+                            {% if list_carichi[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
+                              {{- state.name }} {% endif %} {% endfor%} è stato acceso.
+                        {% else %}Consumption is back within limits. {% set list_loads = states('input_text.list_loads').split( ) %}
+                          {%- for state in states -%} 
+                            {% if list_loads[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
+                              {{- state.name }} {% endif %} {% endfor%} was turned on.
+                        {% endif %}
 
                 - if:
                     - "{{ tts == true }}"
@@ -426,7 +458,16 @@ action:
                     - service: tts.google_translate_say
                       data:
                         entity_id: !input notify_tts
-                        message:  !input turn_on_appliances
+                        message:  > 
+                          {% if language == 'Italiano' %}Il consumo è tornato nei limiti. {% set list_carichi = states('input_text.list_loads').split( ) %}
+                            {%- for state in states -%} 
+                              {% if list_carichi[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
+                                {{- state.name }} {% endif %} {% endfor%} è stato acceso.
+                          {% else %}Consumption is back within limits. {% set list_loads = states('input_text.list_loads').split( ) %}
+                            {%- for state in states -%} 
+                              {% if list_loads[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
+                                {{- state.name }} {% endif %} {% endfor%} was turned on.
+                          {% endif %}
 
                 - if:
                     - "{{ alexa == true }}"
@@ -438,8 +479,16 @@ action:
                         data:
                           type: announce
                           method: spoken
-                        message: !input turn_on_appliances
-
+                        message:  > 
+                          {% if language == 'Italiano' %}Il consumo è tornato nei limiti. {% set list_carichi = states('input_text.list_loads').split( ) %}
+                            {%- for state in states -%} 
+                              {% if list_carichi[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
+                                {{- state.name }} {% endif %} {% endfor%} è stato acceso.
+                          {% else %}Consumption is back within limits. {% set list_loads = states('input_text.list_loads').split( ) %}
+                            {%- for state in states -%} 
+                              {% if list_loads[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
+                                {{- state.name }} {% endif %} {% endfor%} was turned on.
+                          {% endif %}
               - alias: Ripristina ultimo carico spento
                 service: homeassistant.turn_on
                 data: {}
@@ -458,8 +507,17 @@ action:
                     - domain: mobile_app
                       type: notify
                       device_id: !input notify_device
-                      title: !input title_notify_push
-                      message:  !input end_sequence
+                      title: "{{titles}}"
+                      message:  > 
+                        {% if language == 'Italiano' %}I consumi sono tornati regolari e tutti gli elettrodomestici sono stati ripristinati
+                          {%- for state in states -%} 
+                            {% if list_carichi[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
+                              {{- state.name }} {% endif %} {% endfor%} è stato acceso.
+                        {% else %}Consumption is back to normal and all appliances have been restored
+                          {%- for state in states -%} 
+                            {% if list_loads[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
+                              {{- state.name }} {% endif %} {% endfor%} was turned on.
+                        {% endif %}
 
                 - if:
                     - "{{ alexa == true }}"
@@ -471,7 +529,16 @@ action:
                         data:
                           type: announce
                           method: spoken
-                        message: !input end_sequence
+                        message:  > 
+                          {% if language == 'Italiano' %}I consumi sono tornati regolari e tutti gli elettrodomestici sono stati ripristinati
+                            {%- for state in states -%} 
+                              {% if list_carichi[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
+                                {{- state.name }} {% endif %} {% endfor%} è stato acceso.
+                          {% else %}Consumption is back to normal and all appliances have been restored
+                            {%- for state in states -%} 
+                              {% if list_loads[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
+                                {{- state.name }} {% endif %} {% endfor%} was turned on.
+                          {% endif %}
 
                 - if:
                     - "{{ tts == true }}"
@@ -479,7 +546,16 @@ action:
                     - service: tts.google_translate_say
                       data:
                         entity_id: !input notify_tts
-                        message:  !input end_sequence
+                        message:  > 
+                          {% if language == 'Italiano' %}I consumi sono tornati regolari e tutti gli elettrodomestici sono stati ripristinati
+                            {%- for state in states -%} 
+                              {% if list_carichi[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
+                                {{- state.name }} {% endif %} {% endfor%} è stato acceso.
+                          {% else %}Consumption is back to normal and all appliances have been restored
+                            {%- for state in states -%} 
+                              {% if list_loads[repeat.index-1]|regex_replace(find=',') in state.entity_id %}  
+                                {{- state.name }} {% endif %} {% endfor%} was turned on.
+                          {% endif %}
 
         - alias: Imposta il boolean in off per indicare che il ripristiono
           service: input_boolean.turn_off
