@@ -1,6 +1,6 @@
 # Consumption-control-and-appliance-management
 
-`- Version: 1.0 -` </h1>
+`- Version: 1.1 -` </h1>
 # Never without power again
 This project was done for **shutting down household appliances by checking the instantaneous absorption in the house**, to avoid the general meter shutdown.
 
@@ -37,5 +37,11 @@ input_text:
 <a href="https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fmarco-hacs%2FConsumption-control-and-appliance-management%2Fblob%2Fmain%2Fconsumption_control_and_appliance_management.yaml" target="_blank"><img src="https://my.home-assistant.io/badges/blueprint_import.svg" alt="Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled." /></a>
   
 This is my first project that I'm sharing, and I haven't yet found a way to avoid using external helpers.
+
+
+**Changelog**
+Version: 1.1
+- Only the text selector has been eliminated and replaced with a select that allows language selection in English and Italian.
+- Changed input descriptions with Italian, English translation
 
 <i>[https://community.home-assistant.io/t/consumption-control-and-appliance-management/507206](https://community.home-assistant.io/t/consumption-control-and-appliance-management/507206)</i>
