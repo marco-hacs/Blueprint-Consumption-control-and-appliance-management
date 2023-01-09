@@ -1,6 +1,6 @@
 blueprint:
   name: Consumption control and appliance management
-  description:  "`- Version: 1.0 -`\n\n </h1> Never without power again! \n\n\n This project was done for the **shutting down of household appliances 
+  description:  "`- Version: 1.1 -`\n\n </h1> Never without power again! \n\n\n This project was done for the **shutting down of household appliances 
       through verification of the instantaneous absorption in the home**, to avoid turning off the general meter.\n\n*
       When the set threshold in watts is exceeded for the set time, appliances that are not in off mode are turned off and 
       if they have device_class power associated it is checked that the power consumption is greater than 15w\n*
